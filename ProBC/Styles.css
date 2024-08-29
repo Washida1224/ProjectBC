@@ -1,0 +1,107 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+header {
+    background-color: #85c1e9;
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+
+.title {
+    margin-left: 10px;
+    font-size: 18px;
+}
+
+.main {
+    padding: 10px;
+}
+
+.intro {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.button-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    border-radius: 5px;
+    color: white;
+}
+
+.button-container p {
+    flex-grow: 1;
+    margin: 0 10px;
+}
+
+.blue {
+    background-color: #3498db;
+}
+
+.red {
+    background-color: #e74c3c;
+}
+
+.green {
+    background-color: #2ecc71;
+}
+
+.yellow {
+    background-color: #f1c40f;
+}
+
+/* アイコン */
+.icon {
+    width: 40px;
+    height: 40px;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.quiz {
+    background-image: url('quiz-icon.png'); /* 実際の画像パスに置き換えてください */
+}
+
+.fraud {
+    background-image: url('fraud-icon.png'); /* 実際の画像パスに置き換えてください */
+}
+
+.mail {
+    background-image: url('mail-icon.png'); /* 実際の画像パスに置き換えてください */
+}
+
+/* レスポンシブスタイル */
+@media (min-width: 768px) {
+    .buttons {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .button-container {
+        width: 48%;
+    }
+
+    .intro p {
+        font-size: 20px;
+    }
+
+    .button-container button {
+        font-size: 16px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .button-container {
+        width: 30%;
+    }
+}
