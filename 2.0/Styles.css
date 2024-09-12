@@ -1,0 +1,41 @@
+body {
+    background-color: #add8e6; /* 全体の背景色 */
+}
+.clickable-div {
+    cursor: pointer;
+    color: white;
+    padding: 20px;
+    margin: 10px 0;
+    text-align: center;
+    border-radius: 10px;
+}
+.blue-div {
+    background-color: #4A90E2; /* 青のセクション */
+}
+.red-div {
+    background-color: #F44336; /* 赤のセクション */
+}
+.green-div {
+    background-color: #8BC34A; /* 緑のセクション */
+}
+.yellow-div {
+    background-color: #FFEB3B; /* 黄色のスペース */
+    height: 100px;
+}
+.clickable-div:hover {
+    opacity: 0.8;
+}
+.navbar {
+    background-color: #81d4fa; /* ナビゲーションバーの背景色 */
+    padding: 0.5rem 1rem;
+}
+.navbar-brand {
+    margin-left: 0; /* 名称未設定の左寄せ */
+    margin-bottom: 0;
+}
+.navbar-toggler {
+    margin-right: 1rem;
+}
+.offcanvas {
+    background-color: white; /* メニューの背景色は白 */
+}
