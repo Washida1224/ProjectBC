@@ -51,7 +51,7 @@ nav#mobile-menu {
 /* パソコン用メニュー */
 @media (min-width: 1024px) {
     nav#mobile-menu {
-        width: 25%; /* パソコンでは画面の25%を占める */
+        width: 25%; /* https://washida1224.github.io/ProjectBC/2.0/ */
         left: -25%; /* 初期状態で隠す */
     }
 
