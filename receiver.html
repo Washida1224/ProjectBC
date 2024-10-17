@@ -1,93 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Receiver - Screen Share</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-        h1 {
-            margin-bottom: 20px;
-        }
-        #codeDisplay {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-        #video {
-            width: 100%;
-            max-width: 600px;
-            border: 1px solid #ccc;
-            background: #000;
-        }
-    </style>
+    <title>画面共有 - 受信者</title>
 </head>
 <body>
-
-    <h1>Receiver - Screen Share</h1>
-    <p>Your 12-digit code:</p>
-    <div id="codeDisplay"></div>
-    <video id="video" autoplay playsinline></video>
+    <h1>画面共有を受信</h1>
+    <video id="receiverVideo" autoplay playsinline></video>
 
     <script>
-        // 12桁のランダムなコード（数字と大文字のアルファベット）を生成する関数
-        function generateCode() {
-            let code = '';
-            const possible = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ'; // 使用する文字
-            for (let i = 0; i < 12; i++) {
-                code += possible.charAt(Math.floor(Math.random() * possible.length));
+        const receiverVideo = document.getElementById('receiverVideo');
+        let peerConnection;
+
+        const signalingServerUrl = "wss://projectbc.onrender.com";
+        const socket = new WebSocket(signalingServerUrl);
+
+        socket.onmessage = async (message) => {
+            const data = JSON.parse(message.data);
+            if (data.offer) {
+                peerConnection = new RTCPeerConnection();
+
+                peerConnection.ontrack = (event) => {
+                    receiverVideo.srcObject = event.streams[0];
+                };
+
+                peerConnection.onicecandidate = (event) => {
+                    if (event.candidate) {
+                        socket.send(JSON.stringify({ iceCandidate: event.candidate }));
+                    }
+                };
+
+                await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
+                const answer = await peerConnection.createAnswer();
+                await peerConnection.setLocalDescription(answer);
+                socket.send(JSON.stringify({ answer }));
+            } else if (data.iceCandidate) {
+                await peerConnection.addIceCandidate(new RTCIceCandidate(data.iceCandidate));
             }
-            return code;
-        }
-
-        // コードを表示
-        const code = generateCode();
-        document.getElementById('codeDisplay').textContent = code;
-
-        // WebSocket接続
-        const socket = new WebSocket('wss://projectbc.onrender.com/'); // RenderのシグナリングサーバURLに変更してください
-
-        // コードを送信側に送る
-        socket.addEventListener('open', () => {
-            socket.send(JSON.stringify({ type: 'code', code: code }));
-        });
-
-        // シグナリングサーバからメッセージを受信
-        socket.addEventListener('message', (event) => {
-            const data = JSON.parse(event.data);
-            if (data.type === 'offer') {
-                // 送信側からのWebRTCオファーを受け取る
-                handleOffer(data.offer);
-            }
-        });
-
-        // WebRTC処理
-        const peerConnection = new RTCPeerConnection();
-
-        // オファーを受け取り、応答を送信
-        function handleOffer(offer) {
-            peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
-            peerConnection.createAnswer().then((answer) => {
-                peerConnection.setLocalDescription(answer);
-                socket.send(JSON.stringify({ type: 'answer', answer: answer }));
-            });
-        }
-
-        // リモートのストリームを表示
-        peerConnection.addEventListener('track', (event) => {
-            const video = document.getElementById('video');
-            video.srcObject = event.streams[0];
-        });
+        };
     </script>
-
 </body>
 </html>
-
