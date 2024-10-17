@@ -29,7 +29,7 @@
     <script>
         const videoElement = document.getElementById('screenVideo');
         const codeElement = document.getElementById('code');
-        const socket = new WebSocket('wss://your-signaling-server-url');
+        const socket = new WebSocket('wss://projectbc.onrender.com/');
 
         let peerConnection;
         const code = Math.random().toString(36).substring(2, 14);  // 12桁のランダムなコードを生成
