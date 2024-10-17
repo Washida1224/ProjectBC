@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screen Receiver</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        video {
+            width: 100%;
+            height: auto;
+        }
+        #code {
+            font-size: 2em;
+            margin: 20px 0;
+            color: blue;
+        }
+    </style>
+</head>
+<body>
+    <h1>Screen Receiver</h1>
+    <p>Share this code with the sender:</p>
+    <div id="code"></div>
+    <video id="screenVideo" autoplay playsinline></video>
+
+    <script>
+        const videoElement = document.getElementById('screenVideo');
+        const codeElement = document.getElementById('code');
+        const socket = new WebSocket('wss://your-signaling-server-url');
+
+        let peerConnection;
+        const code = Math.random().toString(36).substring(2, 14);  // 12桁のランダムなコードを生成
+        codeElement.textContent = code;
+
+        socket.onmessage = async (message) => {
+            const data = JSON.parse(message.data);
+
+            if (data.targetCode === code) {
+                if (data.offer) {
+                    // オファーを受け取る
+                    peerConnection = new RTCPeerConnection();
+                    peerConnection.onicecandidate = (event) => {
+                        if (event.candidate) {
+                            socket.send(JSON.stringify({ iceCandidate: event.candidate, targetCode: data.sourceCode }));
+                        }
+                    };
+
+                    peerConnection.ontrack = (event) => {
+                        videoElement.srcObject = event.streams[0];
+                    };
+
+                    await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
+                    const answer = await peerConnection.createAnswer();
+                    await peerConnection.setLocalDescription(answer);
+                    socket.send(JSON.stringify({ answer, targetCode: data.sourceCode }));
+                }
+
+                if (data.iceCandidate) {
+                    await peerConnection.addIceCandidate(new RTCIceCandidate(data.iceCandidate));
+                }
+            }
+        };
+    </script>
+</body>
+</html>

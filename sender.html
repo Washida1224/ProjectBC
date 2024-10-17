@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Screen Sender</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        input {
+            font-size: 1.5em;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        button {
+            font-size: 1.5em;
+            padding: 10px 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Screen Sender</h1>
+    <p>Enter the code provided by the receiver:</p>
+    <input type="text" id="codeInput" placeholder="Enter 12-digit code" maxlength="12" />
+    <button id="startButton">Start Screen Sharing</button>
+
+    <script>
+        const codeInput = document.getElementById('codeInput');
+        const startButton = document.getElementById('startButton');
+        const socket = new WebSocket('wss://your-signaling-server-url');
+        let peerConnection;
+
+        startButton.addEventListener('click', async () => {
+            const targetCode = codeInput.value;
+            if (targetCode.length !== 12) {
+                alert('Please enter a valid 12-digit code.');
+                return;
+            }
+
+            try {
+                // 画面をキャプチャ
+                const screenStream = await navigator.mediaDevices.getDisplayMedia({
+                    video: true
+                });
+
+                peerConnection = new RTCPeerConnection();
+                screenStream.getTracks().forEach(track => peerConnection.addTrack(track, screenStream));
+
+                peerConnection.onicecandidate = (event) => {
+                    if (event.candidate) {
+                        socket.send(JSON.stringify({ iceCandidate: event.candidate, sourceCode: targetCode }));
+                    }
+                };
+
+                // オファーを作成して送信
+                const offer = await peerConnection.createOffer();
+                await peerConnection.setLocalDescription(offer);
+                socket.send(JSON.stringify({ offer, sourceCode: targetCode }));
+
+            } catch (error) {
+                console.error('Error sharing the screen:', error);
+            }
+        });
+
+        socket.onmessage = async (message) => {
+            const data = JSON.parse(message.data);
+
+            if (data.answer) {
+                await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+            }
+
+            if (data.iceCandidate) {
+                await peerConnection.addIceCandidate(new RTCIceCandidate(data.iceCandidate));
+            }
+        };
+    </script>
+</body>
+</html>
