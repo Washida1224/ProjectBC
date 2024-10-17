@@ -15,17 +15,44 @@
         const senderVideo = document.getElementById('senderVideo');
         let peerConnection;
 
-        const signalingServerUrl = "wss://projectbc.onrender.com";
-        const socket = new WebSocket(signalingServerUrl);
+        const signalingServerUrl = "wss://projectbc.onrender.com/";
+        let socket = new WebSocket(signalingServerUrl);
 
-        socket.onmessage = async (message) => {
-            const data = JSON.parse(message.data);
-            if (data.answer) {
-                await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
-            } else if (data.iceCandidate) {
-                await peerConnection.addIceCandidate(new RTCIceCandidate(data.iceCandidate));
+        // WebSocketの再接続処理
+        function createWebSocketConnection() {
+            socket = new WebSocket(signalingServerUrl);
+
+            socket.onopen = () => {
+                console.log("WebSocket接続が開きました");
+            };
+
+            socket.onmessage = async (message) => {
+                const data = JSON.parse(message.data);
+                if (data.answer) {
+                    await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+                } else if (data.iceCandidate) {
+                    await peerConnection.addIceCandidate(new RTCIceCandidate(data.iceCandidate));
+                }
+            };
+
+            socket.onclose = () => {
+                console.log("WebSocket接続が閉じられました");
+            };
+
+            socket.onerror = (error) => {
+                console.error("WebSocketエラーが発生しました:", error);
+            };
+        }
+
+        // WebSocketが閉じられているか確認し、閉じられている場合は再接続
+        function sendMessage(message) {
+            if (socket.readyState === WebSocket.OPEN) {
+                socket.send(message);
+            } else {
+                console.error("WebSocket接続がCLOSEDまたはCLOSING状態です。再接続を試みます。");
+                createWebSocketConnection();  // 再接続を試みる
             }
-        };
+        }
 
         async function startScreenSharing() {
             const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
@@ -36,16 +63,19 @@
 
             peerConnection.onicecandidate = (event) => {
                 if (event.candidate) {
-                    socket.send(JSON.stringify({ iceCandidate: event.candidate }));
+                    sendMessage(JSON.stringify({ iceCandidate: event.candidate }));
                 }
             };
 
             const offer = await peerConnection.createOffer();
             await peerConnection.setLocalDescription(offer);
-            socket.send(JSON.stringify({ offer }));
+            sendMessage(JSON.stringify({ offer }));
         }
 
         startButton.addEventListener('click', startScreenSharing);
+
+        // 初回接続のために呼び出す
+        createWebSocketConnection();
     </script>
 </body>
 </html>
