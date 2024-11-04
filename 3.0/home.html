@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ホーム - 名称未設定</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://use.fontawesome.com/releases/v6.6.0/css/all.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg" alt="ロゴ">
+                名称未設定サイト
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#">ホーム</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">マイページ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">お知らせ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">サポート</a></li>
+                    <li class="nav-item"><a class="nav-link text-danger" id="logout-button" href="#">ログアウト</a></li>
+                    <li class="nav-item"><div class="welcome-box" id="user-name">ようこそ、ゲストさん</div></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container-fluid mt-4 main-content">
+        <div class="row">
+            <div class="col-5">
+                <div class="sidebar-button" onmouseover="showDetail(1)"><i class="fas fa-location-dot"></i> 地域ICTリーダとは？</div>
+                <div class="sidebar-button" onmouseover="showDetail(2)"><i class="fa-brands fa-youtube"></i> 授業動画へ行く</div>
+                <div class="sidebar-button" onmouseover="showDetail(3)"><i class="fa-sharp-duotone fa-solid fa-user"></i> 質問フォームへ行く</div>
+                <div class="sidebar-button" onmouseover="showDetail(4)"><i class="fas fa-list-ol"></i> 確認テストへ行く</div>
+                <div class="sidebar-button" onmouseover="showDetail(5)"><i class="fa-solid fa-list-check"></i> 確認テストが全て終わったら</div>
+            </div>
+            <div class="col-7 d-flex align-items-center">
+                <div id="detail-box" class="detail-box">詳細表示ｆｕｋｉｄａｓｉ</div>
+            </div>
+        </div>
+    </div>
+    <footer class="footer mt-auto py-4 bg-light">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <h5>名称未設定</h5>
+                    <p>私たちは、木を植えています。</p>
+                </div>
+                <div class="col-md-3">
+                    <h5>リンク</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">さいたま市</a></li>
+                        <li><a href="#">業績・財務情報</a></li>
+                        <li><a href="#">総合サポート</a></li>
+                        <li><a href="#">お知らせ</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>コンタクト</h5>
+                    <p>電話: 123-456-7890</p>
+                    <p>メール: info@example.go.jpp</p>
+                </div>
+                <div class="col-md-3">
+                    <h5>フォローする</h5>
+                    <a href="#" class="text-dark me-3"><i class="bi bi-facebook"></i> Facebook</a><br>
+                    <a href="#" class="text-dark me-3"><i class="bi bi-twitter"></i> Twitter</a><br>
+                    <a href="#" class="text-dark me-3"><i class="bi bi-instagram"></i> Instagram</a>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <p class="text-muted">&copy; 2024 名称未設定. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
+
