@@ -1,13 +1,13 @@
 [
     {
         "live": "西区",
-        "latitude": 35.9314,
-        "longitude": 139.5938
+        "latitude": 36.057545,
+        "longitude": 137.6789131
     },
     {
         "live": "北区",
-        "latitude": 35.9411,
-        "longitude": 139.6176
+        "latitude": 35.9309168,
+        "longitude": 139.6175677
     },
     {
         "live": "大宮区",
@@ -26,8 +26,8 @@
     },
     {
         "live": "桜区",
-        "latitude": 35.8722,
-        "longitude": 139.6061
+        "latitude": 35.8563132,
+        "longitude": 139.6085203
     },
     {
         "live": "浦和区",
