@@ -2,12 +2,14 @@
     {
         "name": "半田",
         "ID": "5a1ffb172445f0eb9cb3a08f0d63f634073f51bfd765ac2a3360e4b54da11a1b",
-        "password": "fa06926df12aec4356890d4847d43f79101c93548a6b65e4b57bcb651294beef"
+        "password": "fa06926df12aec4356890d4847d43f79101c93548a6b65e4b57bcb651294beef",
+        "address": "大宮区"
     },
     {
         "name": "内田",
         "ID":"a610d4510002bf43f65dcf60fbcf5b6bf1ea8e59ab501337a51dbbddf90ada3d",
-        "password":"fa06926df12aec4356890d4847d43f79101c93548a6b65e4b57bcb651294beef"
+        "password":"fa06926df12aec4356890d4847d43f79101c93548a6b65e4b57bcb651294beef",
+        "address": "見沼区"
     },
     {
         "name": "鷲田",
@@ -18,21 +20,25 @@
     {
         "name": "玉井",
         "ID":"9c64d65a4185564f57ac27ea0ece68ea70cfce0ca8b81ec645d306128ea4843c",
-        "password":"fa06926df12aec4356890d4847d43f79101c93548a6b65e4b57bcb651294beef"
+        "password":"fa06926df12aec4356890d4847d43f79101c93548a6b65e4b57bcb651294beef",
+        "address": "中央区"
     },
     {
         "name": "小林",
         "ID": "990c63a5eff8c518e1d719e3b9f1a1c64094db459f24f22e77df80fa24cdc0ff",
-        "password": "fa06926df12aec4356890d4847d43f79101c93548a6b65e4b57bcb651294beef"
+        "password": "fa06926df12aec4356890d4847d43f79101c93548a6b65e4b57bcb651294beef",
+        "address": "浦和区"
     },
     {
         "name": "稲子",
         "ID":"d839093b7f344c11829c2ad5629a4dd9e49847795628258bb78847d514a978ff",
-        "password":"fa06926df12aec4356890d4847d43f79101c93548a6b65e4b57bcb651294beef"
+        "password":"fa06926df12aec4356890d4847d43f79101c93548a6b65e4b57bcb651294beef",
+        "address": "緑区"
     },
     {
         "name": "管理",
         "ID":"8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
         "password":"8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918"
+        "address": "岩槻区"
     }
 ]
