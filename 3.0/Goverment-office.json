@@ -1,51 +1,51 @@
 [
     {
-        "office": "西区",
+        "live": "西区",
         "latitude": 35.9314,
         "longitude": 139.5938
     },
     {
-        "office": "北区",
+        "live": "北区",
         "latitude": 35.9411,
         "longitude": 139.6176
     },
     {
-        "office": "大宮区",
+        "live": "大宮区",
         "latitude": 35.9067,
         "longitude": 139.6233
     },
     {
-        "office": "見沼区",
+        "live": "見沼区",
         "latitude": 35.9292,
         "longitude": 139.6485
     },
     {
-        "office": "中央区",
+        "live": "中央区",
         "latitude": 35.8942,
         "longitude": 139.6171
     },
     {
-        "office": "桜区",
+        "live": "桜区",
         "latitude": 35.8722,
         "longitude": 139.6061
     },
     {
-        "office": "浦和区",
+        "live": "浦和区",
         "latitude": 35.8581,
         "longitude": 139.6455
     },
     {
-        "office": "南区",
+        "live": "南区",
         "latitude": 35.8453,
         "longitude": 139.6672
     },
     {
-        "office": "緑区",
+        "live": "緑区",
         "latitude": 35.8842,
         "longitude": 139.6845
     },
     {
-        "office": "岩槻区",
+        "live": "岩槻区",
         "latitude": 35.9492,
         "longitude": 139.6961
     }
