@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://use.fontawesome.com/releases/v6.6.0/css/all.css" rel="stylesheet">
+    <title>確認テストが全て終わったら/組み込み</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <style>
+        #map {
+            width: 100%;
+            height: 500px;
+        }
+        .body4 {
+            background-color: #f0f8ff;
+            color: #333;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .containerr {
+            background-color: #ffffff;
+            width: 90%;
+            max-width: 800px;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+            margin: 20px;
+        }
+        .h14 {
+            color: #0077cc; 
+            text-align: center;
+            font-size: 2em;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 10px;
+        }
+
+        .h24 {
+            color: #0056a3; 
+            font-size: 1.5em;
+            margin-top: 20px;
+            border-left: 5px solid #0077cc; 
+            padding-left: 10px;
+        }
+        .p4 {
+            font-size: 1rem;
+            line-height: 1.6;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body class="body4">
+
+<div class="containerr">
+    <h1 class=" h14"><i class="fa-solid fa-check"></i>確認テストが全て終わったら</h1>
+
+    <h2 class="h24">1.確認テストが全て終わったら</h2>
+    <p class="p4">確認テストにすべて合格し</p>
+    <p class="p4">ここに紹介文</p>
+    <p class="p4">ここに紹介文</p>
+
+    <h2 class="h24">2. 会場について</h2>
+    <p class="p4" id="live">貴方の居住している区は「」なので会場は以下の場所です</p>
+    <div id="address">うまく表示されない方は<a href="testend.html">こちら</a></div>
+    <div id="map"></div>
+</div>
+<script>
+    const userId = localStorage.getItem("userID");
+
+if (!userId) {
+    console.error("ユーザーIDがlocalStorageに保存されていません。");
+} else {
+    Promise.all([
+        fetch("https://washida1224.github.io/ProjectBC/3.0/users.json").then(response => response.json()),
+        fetch("https://washida1224.github.io/ProjectBC/3.0/Goverment-office.json").then(response => response.json())
+    ])
+    .then(([usersData, officesData]) => {
+        const user = usersData.find(user => user.ID === userId);
+        if (!user) {
+            throw new Error("指定されたユーザーが見つかりません。");
+        }
+
+        const office = officesData.find(office => office.live === user.live);
+        if (!office) {
+            throw new Error("指定された役所情報が見つかりません。"+user.live);
+        }
+        document.getElementById('live').textContent = `貴方の居住している区は「${user.live}」でなので会場は以下の場所です`;
+        document.getElementById('address').textContent = `住所:${office.address}`;
+
+        const map = L.map("map").setView([office.latitude, office.longitude], 12);
+
+        L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        L.marker([office.latitude, office.longitude])
+            .addTo(map)
+            .bindPopup(`<b>${user.live}の役所</b><br>(${office.latitude}, ${office.longitude})`)
+            .openPopup();
+    })
+    .catch(error => {
+        console.error("エラーが発生しました:", error);
+    });
+}
+</script>
+</body>
+</html>
