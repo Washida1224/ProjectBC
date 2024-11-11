@@ -27,7 +27,7 @@ const detailsHTML = [
     '<iframe src="https://washida1224.github.io/ProjectBC/3.0/組み込み2.html" width="100%" height="800" frameborder="0" marginheight="0" marginwidth="0"></iframe>',
     "<h4>質問フォームの詳細</h4><p>質問フォームへのボタンを置く。他に書くこと思いつかねー</p>",
     "<h4>確認テストの詳細</h4><p>授業動画の内容についてのテスト。理解度をチェックしましょう的なことを書く。</p>",
-    '<iframe src="https://washida1224.github.io/ProjectBC/3.0/testend.html" width="100%" height="900" frameborder="0" marginheight="0" marginwidth="0"></iframe>'
+    '<iframe src="https://washida1224.github.io/ProjectBC/3.0/testend.html" width="100%" height="1000" frameborder="0" marginheight="0" marginwidth="0"></iframe>'
 ];
 function showDetail(index) {
     const detailBox = document.getElementById("detail-box");
