@@ -3,7 +3,7 @@ const userID = localStorage.getItem('userID');
 if (!userID) {
     window.location.href = 'index.html';
 } else {
-    fetch('https://washida1224.github.io/ProjectBC/3.0/users.json')
+    fetch('https://script.google.com/macros/s/AKfycby2rANr67SVDqzK3aIKoKc7U8srTmCWemzPfn0Zy06M6rzEDTcm7ONO6-LW4BNf8AwDXA/exec')
         .then(response => response.json())
         .then(data => {
             const userData = data.find(user => user.ID === userID);
