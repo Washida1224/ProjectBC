@@ -29,7 +29,7 @@ if (!userId) {
 
         L.marker([office.latitude, office.longitude])
             .addTo(map)
-            .bindPopup(`<b>${user.live}の役所</b><br>(${office.latitude}, ${office.longitude})`)
+            .bindPopup(`<b>${user.live}の会場</b><br>(${office.latitude}, ${office.longitude})`)
             .openPopup();
     })
     .catch(error => {
