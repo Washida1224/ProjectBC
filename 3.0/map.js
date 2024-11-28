@@ -20,7 +20,7 @@ if (!userId) {
         document.getElementById('live').textContent = `貴方の居住している区は「${user.live}」でなので会場は以下の場所です`;
         document.getElementById('address').textContent = `住所:${office.address}`;
 
-        const map = L.map("map").setView([office.latitude, office.longitude], 12);
+        const map = L.map("map").setView([office.latitude, office.longitude], 15);
 
         L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
             maxZoom: 19,
