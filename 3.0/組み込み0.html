@@ -61,7 +61,7 @@
     </style>
 </head>
 <body>
-    <h1>確認テスト(仮)</h1>
+    <h1 id="pass">確認テスト(仮)</h1>
     <div class="accordion" id="accordionExample">
         <div class="accordion-item">
             <h2 class="accordion-header" id="headingOne">
@@ -172,17 +172,18 @@
                     .then(response => {
                         const data = response.data.filter(d => d.address === email);
                         if (data.length === 0) throw new Error("該当データがありません。");
-
                         const highest = data.reduce((prev, curr) => curr.score > prev.score ? curr : prev);
                         const oldest = data.reduce((prev, curr) => new Date(curr.time) < new Date(prev.time) ? curr : prev);
                         const latest = data.reduce((prev, curr) => new Date(curr.time) > new Date(prev.time) ? curr : prev);
-
                         document.getElementById("highest-score").textContent = `${highest.score} 点`;
                         document.getElementById("highest-time").textContent = new Date(highest.time).toLocaleString();
                         document.getElementById("oldest-score").textContent = `${oldest.score} 点`;
                         document.getElementById("oldest-time").textContent = new Date(oldest.time).toLocaleString();
                         document.getElementById("latest-score").textContent = `${latest.score} 点`;
                         document.getElementById("latest-time").textContent = new Date(latest.time).toLocaleString();
+                        if (highest.score === 100) {
+                            document.getElementById("pass").innerHTML = '<img src="pass.png" alt="Pass">';
+                        }
                     })
                 )
                 .catch(error => {
