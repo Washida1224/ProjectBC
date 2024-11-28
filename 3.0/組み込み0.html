@@ -61,12 +61,12 @@
     </style>
 </head>
 <body>
-    <h1 id="pass">確認テスト(仮)</h1>
+    <h1>確認テスト(仮)</h1>
     <div class="accordion" id="accordionExample">
         <div class="accordion-item">
             <h2 class="accordion-header" id="headingOne">
                 <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
-                    <h2 class="h24">１．育成講座</h2>
+                    <h2 class="h24"><p id="pass"></p>１．育成講座</h2>
                 </button>
             </h2>
             <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
@@ -182,7 +182,7 @@
                         document.getElementById("latest-score").textContent = `${latest.score} 点`;
                         document.getElementById("latest-time").textContent = new Date(latest.time).toLocaleString();
                         if (highest.score === 100) {
-                            document.getElementById("pass").innerHTML = '<img src="pass.png" alt="Pass">';
+                            document.getElementById("pass").innerHTML = '<img src="pass.png" style="width:50px;">';
                         }
                     })
                 )
