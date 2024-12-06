@@ -9,7 +9,7 @@ if (!userID) {
             const userData = data.find(user => user.ID === userID);
             if (userData) {
                 document.getElementById('user-name').textContent = `${userData.name}でログイン中`;
-                document.getElementById('e-mail').textContent = `登録のされているアドレスは${userData.email}です`;
+                document.getElementById('e-mail').textContent = `${userData.email}`;
             } else {
                 window.location.href = 'index.html';
             }
