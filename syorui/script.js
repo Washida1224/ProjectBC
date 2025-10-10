@@ -62,11 +62,13 @@ document.addEventListener('DOMContentLoaded', function() {
     submitBtn.textContent = '作成中...';
 
     try {
-      const res = await fetch('https://script.google.com/macros/s/AKfycbxhXdmL0fH-wpNZS7GSm_ZwHS7BvjIkUjsd9vyKwDuI6HFX3c0ZKmHs4Jbqy1-QV15gQg/exec', {
+      const res = await fetch('https://script.google.com/macros/s/...../exec', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        // headers は付けない or 下記のように text/plain にする
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify(payload),
       });
+
 
       if (!res.ok) throw new Error('Server error');
 
@@ -87,3 +89,4 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 });
+
