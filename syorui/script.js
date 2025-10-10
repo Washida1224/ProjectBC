@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', function() {
     submitBtn.textContent = '作成中...';
 
     try {
-      const res = await fetch('https://script.google.com/macros/s/AKfycbxnl7nhvPUt5vbujIYImglyWWy_Yk7qNlFxJ8BkEoVlWOgAbSyko-AvQ3LtU6VPiTOK/exec', {
+      const res = await fetch('https://script.google.com/macros/s/AKfycbznXwI7sW7ck32jHNl9q0zCfvZmKkB-W7cG_fpUgx_2LYaBOSK0KI7bXKQ2xDEdk3x8Qw/exec', {
         method: 'POST',
         // headers は付けない or 下記のように text/plain にする
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -89,6 +89,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 });
+
 
 
 
