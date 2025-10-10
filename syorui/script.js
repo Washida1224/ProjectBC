@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
   // ====== ★ ここにあなたの WebアプリURL（/exec）を貼る ★ ======
   // 例: const GAS_URL = 'https://script.google.com/macros/s/XXXXXXXXXXXX/exec';
-  const GAS_URL = 'https://script.google.com/macros/s/AKfycbx1szobMP2TDjnD0xdE_sfVD6xyf7jFswX0VNwkv_0iLUMkOM1IYrkTNMiPBj9RMDhlmg/exec';
+  const GAS_URL = 'https://script.google.com/macros/s/AKfycbxLHPapOdkf-l6FmH6gkoXxrQo_BUaVIh9_Gmrm3ubBjP2xrvYmaX3ZoaWo27RXxycoRg/exec';
 
   // ====== 既存：運行記録の追加ロジック（レイアウトはそのまま） ======
   const addTripButton = document.getElementById('add-trip-button');
@@ -108,4 +108,5 @@ document.addEventListener('DOMContentLoaded', function () {
     return data;
   }
 });
+
 
