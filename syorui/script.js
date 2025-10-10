@@ -30,66 +30,48 @@ document.addEventListener('DOMContentLoaded', function() {
   const form = document.querySelector('form');
   const submitBtn = form.querySelector('.submit-button');
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbzXu8tIuCQluAZ6UpMclfEWzi9Ojf0gl32IakQTYkEjN9tU4Ek37kzpgkDqCRbk4lb4yg/exec';
 
-    // 全フォーム要素を「name -> 値」に詰める（チェックボックスは ✓ / 空 にする）
-    const payload = {};
-    const elements = form.querySelectorAll('input, select, textarea');
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
 
-    elements.forEach(el => {
-      const name = el.name && el.name.trim();
-      if (!name) return;
+  const payload = {};
+  form.querySelectorAll('input, select, textarea').forEach(el => {
+    const name = el.name && el.name.trim();
+    if (!name) return;
+    if (!/^[A-Z]+[0-9]+$/.test(name)) return;       // A1形式のみ
+    payload[name] = (el.type === 'checkbox') ? (el.checked ? '✓' : '') : (el.value ?? '');
+  });
 
-      // A1形式のセル名のみ送る（安全策）
-      const isCellName = /^[A-Z]+[0-9]+$/.test(name);
+  const originalText = submitBtn.textContent;
+  submitBtn.disabled = true;
+  submitBtn.textContent = '作成中...';
 
-      if (!isCellName) {
-        // セル名以外は無視（万一の入力が混ざってもExcel書き込み対象外にする）
-        return;
-      }
-
-      if (el.type === 'checkbox') {
-        payload[name] = el.checked ? '✓' : ''; // Excelで見やすい ✓/空
-      } else {
-        payload[name] = el.value ?? '';
-      }
+  try {
+    const res = await fetch(GAS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // ←プリフライト回避
+      body: JSON.stringify(payload),
     });
 
-    // 送信中UI
-    const originalText = submitBtn.textContent;
-    submitBtn.disabled = true;
-    submitBtn.textContent = '作成中...';
+    // ネットワークに成功しても、サーバーがエラーを返すことがある
+    const text = await res.text();
+    let result;
+    try { result = JSON.parse(text); } catch (e) { result = { success:false, error:'JSONで返ってきませんでした', raw:text }; }
 
-    try {
-      const res = await fetch('https://script.google.com/macros/s/AKfycbznXwI7sW7ck32jHNl9q0zCfvZmKkB-W7cG_fpUgx_2LYaBOSK0KI7bXKQ2xDEdk3x8Qw/exec', {
-        method: 'POST',
-        // headers は付けない or 下記のように text/plain にする
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(payload),
-      });
+    console.log('GAS result:', result); // ←開発中は必ず確認
 
-
-      if (!res.ok) throw new Error('Server error');
-
-      const result = await res.json();
-
-      if (result && result.success && result.fileUrl) {
-        // Excelを自動ダウンロード
-        window.location.href = result.fileUrl;
-      } else {
-        alert('日報作成に失敗しました。しばらくしてから再試行してください。');
-      }
-    } catch (err) {
-      console.error(err);
-      alert('通信エラーが発生しました。ネットワークをご確認ください。');
-    } finally {
-      submitBtn.disabled = false;
-      submitBtn.textContent = originalText;
+    if (res.ok && result && result.success && result.fileUrl) {
+      window.location.href = result.fileUrl; // 自動ダウンロード
+    } else {
+      const msg = (result && (result.error || result.message || result.raw)) || `HTTP ${res.status}`;
+      alert('日報作成に失敗しました：\n' + msg);
     }
-  });
+  } catch (err) {
+    console.error(err);
+    alert('通信エラーが発生しました：' + String(err));
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = originalText;
+  }
 });
-
-
-
-
