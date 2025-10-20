@@ -63,15 +63,16 @@ document.addEventListener('DOMContentLoaded', function () {
       try {
         result = JSON.parse(text);
       } catch (e) {
+        console.error('JSON parse error:', text);
         result = { success: false, error: 'サーバーからJSONで返ってきませんでした', raw: text };
       }
 
       console.log('GAS result:', result);
 
-      // 5) 成功判定
-      if (res.ok && result && result.success && result.fileUrl) {
+      // 5) 成功判定（fileUrl → fileUrlExcelに対応）
+      if (res.ok && result && result.success && result.fileUrlExcel) {
         // Excel自動ダウンロード
-        window.location.href = result.fileUrl;
+        window.location.href = result.fileUrlExcel;
       } else {
         const msg = (result && (result.error || result.message || result.raw)) || `HTTP ${res.status}`;
         alert('日報作成に失敗しました：\n' + msg);
@@ -108,9 +109,3 @@ document.addEventListener('DOMContentLoaded', function () {
     return data;
   }
 });
-
-
-
-
-
-
