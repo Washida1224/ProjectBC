@@ -1,19 +1,21 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>運行日報一覧</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="layout-driver.css">
-  <link rel="stylesheet" href="document-list.css">
 
-  <!-- ▼ 追加：Firebase v9 compat（モジュール不要・最小変更） -->
+  <!-- アイコン/CSS（既存のまま） -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="layout-driver.css"/>
+  <link rel="stylesheet" href="document-list.css"/>
+
+  <!-- Firebase（compat：最小変更で導入） -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <!-- あなたのFirebase設定（そのまま貼付） -->
   <script>
-    // あなたの Firebase 設定（Firebase コンソール > プロジェクト設定 > SDK設定）
-    // ↓値をあなたのプロジェクトのものに差し替えてください
     window.firebaseConfig = {
       apiKey: "AIzaSyC7AK6I_KmkFEZIaWJokO5HN1UnejpHZ3U",
       authDomain: "the-bus-94fe3.firebaseapp.com",
@@ -26,7 +28,7 @@
   </script>
 </head>
 <body>
-  <!-- ヘッダー -->
+  <!-- ヘッダー（既存風） -->
   <header>
     <div class="navbar">
       <div class="logo">運行管理システム：運行日報一覧</div>
@@ -42,21 +44,17 @@
 
   <!-- メイン -->
   <main class="document-list-page">
-
-    <!-- フィルタエリア -->
+    <!-- フィルタエリア（元の形） -->
     <div class="filter-box">
-      <input type="text" id="searchInput" placeholder="キーワード検索...">
-
-      <!-- 日付選択 -->
-      <input type="date" id="dateFilter">
-
+      <input type="text" id="searchInput" placeholder="キーワード検索..."/>
+      <input type="date" id="dateFilter"/>
       <select id="dateSort">
         <option value="new">新しい順</option>
         <option value="old">古い順</option>
       </select>
     </div>
 
-    <!-- 一覧テーブル -->
+    <!-- 一覧テーブル（列順はそのまま） -->
     <div class="table-container">
       <table id="reportTable">
         <thead>
@@ -73,7 +71,6 @@
           </tr>
         </thead>
         <tbody>
-          <!-- 初期はダミーが入っていますが、起動時にFirestoreの内容で置き換えます:contentReference[oaicite:3]{index=3} -->
           <tr><td colspan="9">読み込み中...</td></tr>
         </tbody>
       </table>
@@ -90,195 +87,149 @@
     <p>© 2025 プロジェクト演習D,E：A08 | All Rights Reserved</p>
   </footer>
 
-<script>
-//ハンバーガーメニュー
-const hamburger = document.getElementById("hamburger");
-const navLinks = document.getElementById("navLinks");
-hamburger.addEventListener("click", () => {
-  navLinks.classList.toggle("active");
-});
+  <!-- ページ用スクリプト -->
+  <script>
+    // ハンバーガー
+    const hamburger = document.getElementById("hamburger");
+    const navLinks = document.getElementById("navLinks");
+    hamburger.addEventListener("click", () => navLinks.classList.toggle("active"));
 
-const reportTableBody = document.querySelector("#reportTable tbody");
-// ▼ 元コードは const でしたが、Firestore読込後に再構築するため let にします（最小変更）
-let reportRows = Array.from(reportTableBody.querySelectorAll("tr")); 
-const dateFilter = document.getElementById("dateFilter");
-const dateSort = document.getElementById("dateSort");
-const tableHeadings = document.querySelectorAll("#reportTable thead th");
-const idHeader = tableHeadings[0];
-// ▼ 元コード内で未定義だったので追加（バグ防止）
-const searchInput = document.getElementById("searchInput");
+    const table = document.getElementById("reportTable");
+    const tbody = table.querySelector("tbody");
+    const searchInput = document.getElementById("searchInput");
+    const dateFilter = document.getElementById("dateFilter");
+    const dateSort = document.getElementById("dateSort");
 
-// ソート・フィルタリングの状態を保持
-let idSortState = 'none'; // 'none', 'asc', 'desc'
-let dateSortState = dateSort.value; // 'new', 'old'
+    // 行キャッシュ（フィルタ/ソート用）
+    let reportRows = [];
 
-// 日付ソートのアイコンを更新するヘルパー関数
-function updateDateSortIcon() {
-  let icon = dateSort.parentNode.querySelector('.date-sort-icon');
-  if (!icon) {
-    dateSort.insertAdjacentHTML('afterend', ' <i class="fas fa-sort date-sort-icon"></i>');
-    icon = dateSort.parentNode.querySelector('.date-sort-icon');
-  }
-  icon.classList.remove('fa-sort', 'fa-sort-up', 'fa-sort-down');
-  if (dateSortState === 'new') {
-    icon.classList.add('fa-sort-down'); // 新しい順
-  } else if (dateSortState === 'old') {
-    icon.classList.add('fa-sort-up');   // 古い順
-  } else {
-    icon.classList.add('fa-sort');
-  }
-}
-
-// IDソートのアイコンを更新するヘルパー関数
-function updateIdSortIcon() {
-  let icon = idHeader.querySelector('.fas');
-  if (!icon) {
-    idHeader.innerHTML += ' <i class="fas fa-sort"></i>';
-    icon = idHeader.querySelector('.fas');
-    idHeader.style.cursor = 'pointer';
-  }
-  icon.classList.remove('fa-sort', 'fa-sort-up', 'fa-sort-down');
-  if (idSortState === 'asc') {
-    icon.classList.add('fa-sort-up');
-  } else if (idSortState === 'desc') {
-    icon.classList.add('fa-sort-down');
-  } else {
-    icon.classList.add('fa-sort');
-  }
-}
-
-// フィルタリングとソートを実行し、テーブルを更新するメイン関数
-function updateTable() {
-  const filterDate = dateFilter.value;
-  const filterText = searchInput.value.toLowerCase();
-
-  const visibleRows = reportRows.filter(row => {
-    const dateCell = row.cells[2]?.textContent || ''; 
-    // 日付フィルタ
-    const isDateMatch = !filterDate || dateCell === filterDate;
-    if (!isDateMatch) return false;
-
-    // キーワード検索（行全体）
-    if (filterText) {
-      const rowText = Array.from(row.cells).map(c => c.textContent).join(' ').toLowerCase();
-      return rowText.includes(filterText);
-    }
-    return true;
-  });
-
-  // ソート適用
-  visibleRows.sort((a, b) => {
-    if (idSortState !== 'none') {
-      const idA = parseInt(a.cells[0].textContent, 10);
-      const idB = parseInt(b.cells[0].textContent, 10);
-      return idSortState === 'asc' ? (idA - idB) : (idB - idA);
-    }
-    if (dateSortState !== 'none') {
-      const dateA = new Date(a.cells[2].textContent);
-      const dateB = new Date(b.cells[2].textContent);
-      return dateSortState === 'new' ? (dateB - dateA) : (dateA - dateB);
-    }
-    return 0;
-  });
-
-  // 再描画
-  reportTableBody.innerHTML = '';
-  visibleRows.forEach(row => reportTableBody.appendChild(row));
-
-  // アイコン更新
-  updateIdSortIcon();
-  updateDateSortIcon();
-}
-
-// IDヘッダークリックでソート切替
-idHeader.addEventListener('click', () => {
-  if (idSortState === 'none' || idSortState === 'desc') {
-    idSortState = 'asc'; 
-    dateSortState = 'none';
-  } else if (idSortState === 'asc') {
-    idSortState = 'desc'; 
-    dateSortState = 'none';
-  }
-  updateTable();
-});
-
-// 日付ソート（Select Box）
-dateSort.addEventListener("change", () => {
-  dateSortState = dateSort.value;
-  idSortState = 'none';
-  updateTable();
-});
-
-// 日付フィルタ
-dateFilter.addEventListener("change", updateTable);
-
-// キーワード検索
-searchInput.addEventListener("input", updateTable);
-
-// ===== Firestore から一覧を読み込んでテーブルを差し替え（最小変更で追記） =====
-async function loadReportsFromFirestore() {
-  try {
-    // Firebase 初期化（未初期化時のみ）
-    if (!firebase.apps.length) {
-      firebase.initializeApp(window.firebaseConfig);
-    }
-    const db = firebase.firestore();
-
-    // createdAt（文字列: "YYYY-MM-DD HH:mm:ss"）降順で取得
-    const snap = await db.collection('reports').orderBy('createdAt', 'desc').get();
-
-    // 行を組み立て
-    const rows = [];
-    let idx = 1;
-    snap.forEach(doc => {
-      const d = doc.data();
-      // 元の列順（ID / ドライバー / 日付 / 車両番号 / 契約施設 / 出庫 / 入庫 / 距離 / 詳細）:contentReference[oaicite:4]{index=4}
-      const id = String(idx).padStart(3, '0');
-      const driver = d.driverName || '-';
-      const date = d.serviceDate || '-';
-      const vehicle = d.vehicleNumber || '-';
-      const facility = d.clientName || d.facility || '-'; // 施設が無い場合は '-'
-      const outTime = d.outTime || '-';
-      const inTime  = d.inTime  || '-';
-      const distance = (d.distance !== undefined && d.distance !== null && d.distance !== '') ? d.distance : '-';
-      const detailUrl = d.fileUrlPdf || d.fileUrlExcel || '#'; // 詳細 = PDF優先で閲覧
-
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${id}</td>
-        <td>${driver}</td>
-        <td>${date}</td>
-        <td>${vehicle}</td>
-        <td>${facility}</td>
-        <td>${outTime}</td>
-        <td>${inTime}</td>
-        <td>${distance}</td>
-        <td><a href="${detailUrl}" target="_blank" class="detail-btn">詳細</a></td>
-      `;
-      rows.push(tr);
-      idx++;
-    });
-
-    // テーブル差し替え
-    reportTableBody.innerHTML = '';
-    rows.forEach(r => reportTableBody.appendChild(r));
-
-    // ソート・フィルタの基点となる配列を更新（最小変更）
-    reportRows = Array.from(reportTableBody.querySelectorAll('tr'));
+    // ソート状態
+    let idSortState = "none";         // "none" | "asc" | "desc"
+    let dateSortState = dateSort.value; // "new" | "old" | "none"
 
     // 表示更新
-    updateTable();
+    function updateTable() {
+      const filterDate = dateFilter.value;           // YYYY-MM-DD
+      const keyword = (searchInput.value || "").toLowerCase();
 
-  } catch (err) {
-    console.error('Firestore 読み込みエラー:', err);
-    reportTableBody.innerHTML = '<tr><td colspan="9">読み込みに失敗しました。</td></tr>';
-    // 基点を空に
-    reportRows = Array.from(reportTableBody.querySelectorAll('tr'));
-  }
-}
+      const visible = reportRows.filter(row => {
+        const dateCell = row.cells[2]?.textContent?.trim() || "";
+        if (filterDate && dateCell !== filterDate) return false;
 
-// 初期表示
-loadReportsFromFirestore();
-</script>
+        if (keyword) {
+          const text = Array.from(row.cells).map(td => td.textContent).join(" ").toLowerCase();
+          if (!text.includes(keyword)) return false;
+        }
+        return true;
+      });
+
+      // ソート
+      visible.sort((a,b) => {
+        // IDソート優先（未実装のIDヘッダークリック用に残しつつ、今回は日付セレクト優先）
+        if (idSortState !== "none") {
+          const A = parseInt(a.cells[0].textContent,10);
+          const B = parseInt(b.cells[0].textContent,10);
+          return idSortState === "asc" ? (A - B) : (B - A);
+        }
+        if (dateSortState !== "none") {
+          const dA = new Date(a.cells[2].textContent);
+          const dB = new Date(b.cells[2].textContent);
+          return dateSortState === "new" ? (dB - dA) : (dA - dB);
+        }
+        return 0;
+      });
+
+      // 再描画
+      tbody.innerHTML = "";
+      visible.forEach(tr => tbody.appendChild(tr));
+    }
+
+    // イベント
+    searchInput.addEventListener("input", updateTable);
+    dateFilter.addEventListener("change", updateTable);
+    dateSort.addEventListener("change", () => {
+      dateSortState = dateSort.value;
+      idSortState = "none";
+      updateTable();
+    });
+
+    // Firestore読み込み
+    (async function loadFromFirestore() {
+      try {
+        if (!firebase.apps.length) firebase.initializeApp(window.firebaseConfig);
+        const db = firebase.firestore();
+
+        // createdAt（文字列想定: "YYYY-MM-DD HH:mm:ss"）で降順
+        const snap = await db.collection("reports").orderBy("createdAt", "desc").get();
+
+        if (snap.empty) {
+          tbody.innerHTML = '<tr><td colspan="9">データがありません。</td></tr>';
+          reportRows = Array.from(tbody.querySelectorAll("tr"));
+          return;
+        }
+
+        const rows = [];
+        let i = 1;
+        snap.forEach(doc => {
+          const d = doc.data();
+
+          // 各列データ（空は "-"）
+          const id       = String(i).padStart(3,"0");
+          const driver   = d.driverName || "-";
+          const vehicle  = d.vehicleNumber || "-";
+          const facility = d.clientName || d.facility || "-";
+          const outTime  = d.outTime || "-";
+          const inTime   = d.inTime  || "-";
+          const distance = (d.distance ?? "") !== "" ? d.distance : "-";
+          const detailUrl = d.fileUrlPdf || d.fileUrlExcel || "#"; // PDF優先
+
+          // 日付：serviceDateが正ならそれを、ダメならcreatedAtから生成
+          let dateText = "-";
+          const sd = d.serviceDate;
+          if (sd && /^\d{4}-\d{2}-\d{2}$/.test(sd)) {
+            dateText = sd;
+          } else if (d.createdAt) {
+            // createdAt は "YYYY-MM-DD HH:mm:ss" 文字列 or Timestamp を想定
+            const created = (typeof d.createdAt === "string") ? new Date(d.createdAt) :
+                            (d.createdAt.toDate ? d.createdAt.toDate() : new Date(d.createdAt));
+            if (!isNaN(created)) {
+              const y = created.getFullYear();
+              const m = String(created.getMonth()+1).padStart(2,"0");
+              const dy = String(created.getDate()).padStart(2,"0");
+              dateText = `${y}-${m}-${dy}`;
+            }
+          }
+
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${id}</td>
+            <td>${driver}</td>
+            <td>${dateText}</td>
+            <td>${vehicle}</td>
+            <td>${facility}</td>
+            <td>${outTime}</td>
+            <td>${inTime}</td>
+            <td>${distance}</td>
+            <td><a href="${detailUrl}" target="_blank" class="detail-btn">詳細</a></td>
+          `;
+          rows.push(tr);
+          i++;
+        });
+
+        // 差し替え
+        tbody.innerHTML = "";
+        rows.forEach(r => tbody.appendChild(r));
+
+        // フィルタ/ソート用キャッシュを更新して適用
+        reportRows = Array.from(tbody.querySelectorAll("tr"));
+        updateTable();
+
+      } catch (err) {
+        console.error("Firestore 読み込みエラー:", err);
+        tbody.innerHTML = '<tr><td colspan="9">読み込みに失敗しました（コンソールをご確認ください）。</td></tr>';
+        reportRows = Array.from(tbody.querySelectorAll("tr"));
+      }
+    })();
+  </script>
 </body>
 </html>
