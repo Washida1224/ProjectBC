@@ -5,16 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>運行日報一覧</title>
 
-  <!-- アイコン/CSS（既存のまま） -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <link rel="stylesheet" href="layout-driver.css"/>
   <link rel="stylesheet" href="document-list.css"/>
 
-  <!-- Firebase（compat：最小変更で導入） -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-  <!-- あなたのFirebase設定（そのまま貼付） -->
   <script>
     window.firebaseConfig = {
       apiKey: "AIzaSyC7AK6I_KmkFEZIaWJokO5HN1UnejpHZ3U",
@@ -28,7 +25,6 @@
   </script>
 </head>
 <body>
-  <!-- ヘッダー（既存風） -->
   <header>
     <div class="navbar">
       <div class="logo">運行管理システム：運行日報一覧</div>
@@ -42,9 +38,7 @@
     </div>
   </header>
 
-  <!-- メイン -->
   <main class="document-list-page">
-    <!-- フィルタエリア（元の形） -->
     <div class="filter-box">
       <input type="text" id="searchInput" placeholder="キーワード検索..."/>
       <input type="date" id="dateFilter"/>
@@ -54,7 +48,6 @@
       </select>
     </div>
 
-    <!-- 一覧テーブル（列順はそのまま） -->
     <div class="table-container">
       <table id="reportTable">
         <thead>
@@ -233,3 +226,4 @@
   </script>
 </body>
 </html>
+
