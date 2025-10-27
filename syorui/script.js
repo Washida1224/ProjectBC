@@ -1,15 +1,12 @@
 document.addEventListener('DOMContentLoaded', function () {
-  // ====== ★ ここにあなたの WebアプリURL（/exec）を貼る ★ ======
-  // 例: const GAS_URL = 'https://script.google.com/macros/s/XXXXXXXXXXXX/exec';
   const GAS_URL = 'https://script.google.com/macros/s/AKfycbxHznIqroagy0pqhhbRx2ccqOVfDKJeaaNk7rxsZoeUKCM8YIUkg3SczuhbDMRmjNLEqQ/exec';
 
-  // ====== 既存：運行記録の追加ロジック（レイアウトはそのまま） ======
   const addTripButton = document.getElementById('add-trip-button');
   const tripLogContainer = document.getElementById('trip-log-container');
   let tripCount = 0;
   const MAX_TRIPS = 8;
 
-  // 初期行を1つ追加
+  // 初期行を1つ追加するやつ
   addTrip();
   addTripButton.addEventListener('click', addTrip);
 
@@ -34,30 +31,29 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  // ====== 送信処理：GASへPOST→ExcelのDLリンクを受け取る ======
+
   const form = document.querySelector('form');
   const submitBtn = form.querySelector('.submit-button');
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    // 1) ペイロード作成：A1形式のセル名のみ送る（例: E4, P3）
+
     const payload = collectPayloadFromForm(form);
 
-    // 2) UIロック
+
     const originalText = submitBtn.textContent;
     submitBtn.disabled = true;
     submitBtn.textContent = '作成中...';
 
     try {
-      // 3) GASへ送信（プリフライト回避のため text/plain で送る）
       const res = await fetch(GAS_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify(payload),
       });
 
-      // 4) レスポンスを安全に解釈
+
       const text = await res.text();
       let result;
       try {
@@ -69,9 +65,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
       console.log('GAS result:', result);
 
-      // 5) 成功判定（fileUrl → fileUrlExcelに対応）
       if (res.ok && result && result.success && result.fileUrlExcel) {
-        // Excel自動ダウンロード
+
         window.location.href = result.fileUrlExcel;
       } else {
         const msg = (result && (result.error || result.message || result.raw)) || `HTTP ${res.status}`;
@@ -81,13 +76,12 @@ document.addEventListener('DOMContentLoaded', function () {
       console.error(err);
       alert('通信エラーが発生しました：\n' + String(err));
     } finally {
-      // 6) UI解除
+
       submitBtn.disabled = false;
       submitBtn.textContent = originalText;
     }
   });
 
-  // ====== ユーティリティ：フォームからA1形式のセル名だけを抽出 ======
   function collectPayloadFromForm(formEl) {
     const data = {};
     const elements = formEl.querySelectorAll('input, select, textarea');
@@ -96,7 +90,6 @@ document.addEventListener('DOMContentLoaded', function () {
       const name = el.name && el.name.trim();
       if (!name) return;
 
-      // A1形式（列はA-Z+、行は1- のみ許可）
       if (!/^[A-Z]+[0-9]+$/.test(name)) return;
 
       if (el.type === 'checkbox') {
@@ -109,6 +102,7 @@ document.addEventListener('DOMContentLoaded', function () {
     return data;
   }
 });
+
 
 
 
