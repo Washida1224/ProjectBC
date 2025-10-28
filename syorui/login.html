@@ -10,6 +10,7 @@
   <div class="login-container">
     <h1>THE BUS ログイン</h1>
 
+    <!-- 🔹 ログインフォーム -->
     <form id="login-form">
       <label for="email">メールアドレス</label>
       <input type="email" id="email" placeholder="example@mail.com" required>
@@ -26,6 +27,28 @@
       </select>
 
       <button type="submit" id="login-btn">ログイン</button>
+    </form>
+
+    <hr>
+
+    <!-- 🔹 新規登録フォーム -->
+    <h2>新規登録</h2>
+    <form id="signup-form">
+      <label for="signup-email">メールアドレス</label>
+      <input type="email" id="signup-email" placeholder="example@mail.com" required>
+
+      <label for="signup-password">パスワード</label>
+      <input type="password" id="signup-password" placeholder="********" required>
+
+      <label for="signup-userType">ユーザー種別</label>
+      <select id="signup-userType" required>
+        <option value="">選択してください</option>
+        <option value="driver">ドライバー</option>
+        <option value="general">一般</option>
+        <option value="admin">管理者</option>
+      </select>
+
+      <button type="submit" id="signup-btn">登録</button>
     </form>
 
     <p id="message"></p>
