@@ -1,10 +1,10 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
 import {
-  getAuth, signInWithEmailAndPassword, setPersistence,
-  browserLocalPersistence
+  getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword,
+  setPersistence, browserLocalPersistence
 } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
 import {
-  getFirestore, collection, query, where, getDocs
+  getFirestore, collection, addDoc, query, where, getDocs
 } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -20,13 +20,14 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// 永続的ログイン設定
 await setPersistence(auth, browserLocalPersistence);
 
-const form = document.getElementById("login-form");
 const message = document.getElementById("message");
 
-form.addEventListener("submit", async (e) => {
+// ========================
+// 🔹 ログイン処理
+// ========================
+document.getElementById("login-form").addEventListener("submit", async (e) => {
   e.preventDefault();
   message.textContent = "";
 
@@ -35,29 +36,21 @@ form.addEventListener("submit", async (e) => {
   const selectedType = document.getElementById("userType").value;
 
   try {
-    // Firebase Authで認証
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
-    // Firestoreのaccountsコレクションで照合
+    // Firestoreでユーザー種別を照合
     const q = query(collection(db, "accounts"), where("email", "==", email));
     const snapshot = await getDocs(q);
 
-    if (snapshot.empty) {
-      throw new Error("アカウント情報が見つかりません");
-    }
-
+    if (snapshot.empty) throw new Error("ユーザー情報が見つかりません");
     const userData = snapshot.docs[0].data();
-
-    if (userData.password !== password) {
-      throw new Error("パスワードが一致しません");
-    }
 
     if (userData.userType !== selectedType) {
       throw new Error("ユーザー種別が一致しません");
     }
 
-    // 種別に応じたリダイレクト
+    // 成功時リダイレクト
     switch (userData.userType) {
       case "driver":
         window.location.href = "index-driver.html";
@@ -73,7 +66,45 @@ form.addEventListener("submit", async (e) => {
     }
 
   } catch (err) {
-    console.error(err);
     message.textContent = "ログインに失敗しました：" + err.message;
+  }
+});
+
+// ========================
+// 🔹 新規登録処理
+// ========================
+document.getElementById("signup-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  message.textContent = "";
+
+  const email = document.getElementById("signup-email").value.trim();
+  const password = document.getElementById("signup-password").value.trim();
+  const userType = document.getElementById("signup-userType").value;
+
+  try {
+    // Firebase Authでアカウント作成
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+
+    const now = new Date().toISOString();
+
+    // Firestoreにも登録情報を保存
+    await addDoc(collection(db, "accounts"), {
+      createdAt: now,
+      updatedAt: now,
+      userId: user.uid,
+      email: email,
+      password: password, // 実運用ではハッシュ化必須
+      userType: userType
+    });
+
+    message.style.color = "green";
+    message.textContent = "登録が完了しました！ログインしてください。";
+    document.getElementById("signup-form").reset();
+
+  } catch (err) {
+    console.error(err);
+    message.style.color = "red";
+    message.textContent = "登録に失敗しました：" + err.message;
   }
 });
