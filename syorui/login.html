@@ -1,57 +1,171 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>ログイン | THE BUS</title>
-  <link rel="stylesheet" href="login.css">
-  <script type="module" src="login.js"></script>
-</head>
-<body>
-  <div class="login-container">
-    <h1>THE BUS ログイン</h1>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ログインページ</title>
 
-    <!-- 🔹 ログインフォーム -->
-    <form id="login-form">
-      <label for="email">メールアドレス</label>
-      <input type="email" id="email" placeholder="example@mail.com" required>
+  <!-- 既存CSS -->
+  <link rel="stylesheet" href="layout-driver.css" />
+  <link rel="stylesheet" href="document-list.css" />
+
+  <style>
+    .login-container {
+      max-width: 400px;
+      background-color: #f0f2f5;
+      margin: 80px auto;
+      padding: 40px 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    }
+    .login-title {
+      text-align: center;
+      font-size: 1.6rem;
+      font-weight: bold;
+      margin-bottom: 25px;
+      color: #00796b;
+    }
+    .login-form label {
+      display: block;
+      font-size: 0.9rem;
+      margin-bottom: 6px;
+      color: #333;
+    }
+    .login-form input, .login-form select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+      margin-bottom: 15px;
+    }
+    .login-form input:focus, .login-form select:focus {
+      border-color: #00796b;
+      outline: none;
+      box-shadow: 0 0 5px rgba(0,121,107,0.3);
+    }
+    .login-btn {
+      width: 100%;
+      padding: 12px;
+      font-size: 1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      background-color: #00796b;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .login-btn:hover {
+      background-color: #005f55;
+    }
+  </style>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    // ===== Firebase設定 =====
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyC7AK6I_KmkFEZIaWJokO5HN1UnejpHZ3U",
+      authDomain: "the-bus-94fe3.firebaseapp.com",
+      projectId: "the-bus-94fe3",
+      storageBucket: "the-bus-94fe3.appspot.com",
+      messagingSenderId: "782387450057",
+      appId: "1:782387450057:web:d6d4dcf0fd778ff6533d18",
+      measurementId: "G-D9627JEYQ6"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // ===== ログイン処理 =====
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.querySelector(".login-form");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const email = document.getElementById("e-mail").value.trim();
+        const password = document.getElementById("password").value;
+        const selectedType = document.getElementById("userType").value;
+
+        try {
+          // ① Firebase Authenticationで認証
+          const userCredential = await signInWithEmailAndPassword(auth, email, password);
+          const user = userCredential.user;
+
+          // ② Firestoreのaccountsコレクションを参照
+          const q = query(
+            collection(db, "accounts"),
+            where("email", "==", email),
+            where("userType", "==", selectedType)
+          );
+
+          const querySnapshot = await getDocs(q);
+
+          if (querySnapshot.empty) {
+            alert("ユーザー種別またはメールアドレスが一致しません。");
+            return;
+          }
+
+          // ③ userTypeに応じたリダイレクト
+          switch (selectedType) {
+            case "driver":
+              window.location.href = "index-driver.html";
+              break;
+            case "manager":
+              window.location.href = "index-staff.html";
+              break;
+            case "user":
+              window.location.href = "index-ippan.html";
+              break;
+            default:
+              alert("不明なユーザー種別です。");
+          }
+
+        } catch (error) {
+          console.error("ログインエラー:", error);
+          alert("ログインに失敗しました: " + error.message);
+        }
+      });
+    });
+  </script>
+</head>
+
+<body>
+  <header>
+    <div class="navbar">
+      <div class="logo">運行管理システム</div>
+    </div>
+  </header>
+
+  <div class="login-container">
+    <h2 class="login-title">ログイン</h2>
+    <form class="login-form">
+      <label for="userType">ユーザー種別</label>
+      <select id="userType" name="userType" required>
+        <option value="">選択してください</option>
+        <option value="driver">運転手</option>
+        <option value="manager">運行管理者</option>
+        <option value="user">一般利用者</option>
+      </select>
+
+      <label for="e-mail">メールアドレス</label>
+      <input type="text" id="e-mail" name="e-mail" placeholder="メールアドレスを入力" required>
 
       <label for="password">パスワード</label>
-      <input type="password" id="password" placeholder="********" required>
+      <input type="password" id="password" name="password" placeholder="パスワードを入力" required>
 
-      <label for="userType">ユーザー種別</label>
-      <select id="userType" required>
-        <option value="">選択してください</option>
-        <option value="driver">ドライバー</option>
-        <option value="general">一般</option>
-        <option value="admin">管理者</option>
-      </select>
-
-      <button type="submit" id="login-btn">ログイン</button>
+      <button type="submit" class="login-btn">ログイン</button>
     </form>
-
-    <hr>
-
-    <!-- 🔹 新規登録フォーム -->
-    <h2>新規登録</h2>
-    <form id="signup-form">
-      <label for="signup-email">メールアドレス</label>
-      <input type="email" id="signup-email" placeholder="example@mail.com" required>
-
-      <label for="signup-password">パスワード</label>
-      <input type="password" id="signup-password" placeholder="********" required>
-
-      <label for="signup-userType">ユーザー種別</label>
-      <select id="signup-userType" required>
-        <option value="">選択してください</option>
-        <option value="driver">ドライバー</option>
-        <option value="general">一般</option>
-        <option value="admin">管理者</option>
-      </select>
-
-      <button type="submit" id="signup-btn">登録</button>
-    </form>
-
-    <p id="message"></p>
   </div>
+
+  <footer>
+    <p>© 2025 運行管理システム</p>
+  </footer>
 </body>
 </html>
