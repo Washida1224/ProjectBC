@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ログインページ</title>
 
-  <!-- 既存CSS -->
   <link rel="stylesheet" href="layout-driver.css" />
   <link rel="stylesheet" href="document-list.css" />
 
@@ -61,9 +60,7 @@
     }
   </style>
 
-  <!-- Firebase SDK -->
   <script type="module">
-    // ===== Firebase設定 =====
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -82,7 +79,6 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
 
-    // ===== ログイン処理 =====
     document.addEventListener("DOMContentLoaded", () => {
       const form = document.querySelector(".login-form");
 
@@ -94,11 +90,9 @@
         const selectedType = document.getElementById("userType").value;
 
         try {
-          // ① Firebase Authenticationで認証
           const userCredential = await signInWithEmailAndPassword(auth, email, password);
           const user = userCredential.user;
 
-          // ② Firestoreのaccountsコレクションを参照
           const q = query(
             collection(db, "accounts"),
             where("email", "==", email),
@@ -112,7 +106,6 @@
             return;
           }
 
-          // ③ userTypeに応じたリダイレクト
           switch (selectedType) {
             case "driver":
               window.location.href = "index-driver.html";
@@ -169,3 +162,4 @@
   </footer>
 </body>
 </html>
+
