@@ -36,32 +36,29 @@ registerForm.addEventListener("submit", async (e) => {
   const userType = document.getElementById("register-type").value;
 
   try {
-    // Firebase Authにユーザー作成
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
-    // 認証状態が確実に反映されるまで待つ
     await new Promise((resolve) => {
       const unsub = onAuthStateChanged(auth, (usr) => {
         if (usr) {
-          unsub(); // 監視解除
+          unsub();
           resolve();
         }
       });
     });
 
-    // Firestoreにユーザー情報を登録
     await addDoc(collection(db, "accounts"), {
       userId: user.uid,
       email: email,
-      password: password, // 本来は保存しないのが望ましい（ハッシュ化推奨）
+      password: password,
       userType: userType,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
 
     message.style.color = "green";
-    message.textContent = "登録が完了しました！ログインしてください。";
+    message.textContent = "登録が完了しました、ログインしてください。";
   } catch (err) {
     console.error("登録エラー:", err);
     if (err.code === "auth/email-already-in-use") {
@@ -73,3 +70,4 @@ registerForm.addEventListener("submit", async (e) => {
     }
   }
 });
+
